@@ -144,14 +144,22 @@ function escapeHtml(str) {
 
 // タイムスタンプのフォーマット
 function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    return date.toLocaleString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    const now = new Date();
+    const postDate = new Date(timestamp);
+    const Ms = now - postDate;
+    const Days = Math.floor(Ms / (1000 * 60 * 60 * 24));
+    const Hours = Math.floor(Ms / (1000 * 60 * 60));
+    const Minutes = Math.floor(Ms / (1000 * 60));
+
+    if (Days > 0) {
+        return `${Days}日前`;
+    } else if (Hours > 0) {
+        return `${Hours}時間前`;
+    } else if (Minutes > 0) {
+        return `${Minutes}分前`;
+    } else {
+        return 'たった今';
+    }
 }
 
 // 投稿の編集権限チェック
