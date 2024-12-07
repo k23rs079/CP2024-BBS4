@@ -464,6 +464,10 @@ function updateUI(user) {
     }
 }
 
+function changeBackgroundColor(color) {
+    $('body').css('background-color', color);
+}
+
 $(function() {
     // Firebaseの初期化
     try {
@@ -524,6 +528,12 @@ window.addEventListener('unload', function() {
     </script>
 </head>
 <body>
+    <div class="background-control">
+    <button onclick="changeBackgroundColor('#f0f8ff')" class="btn">背景を青に</button>
+    <button onclick="changeBackgroundColor('#fff8dc')" class="btn">背景をクリーム色に</button>
+    <button onclick="changeBackgroundColor('#ffffff')" class="btn">背景を元に戻す</button>
+    </div>
+
     <div class="container">
         <h1>掲示板アプリ</h1>
         
