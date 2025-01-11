@@ -107,26 +107,29 @@ function createPost(author, content) {
     if (!validateContent(content)) return;
 
     const postData = {
-    author: currentUser.displayName || '匿名ユーザ', // displayName を優先
-    content: content,
-    timestamp: firebase.database.ServerValue.TIMESTAMP,
-    userId: currentUser.uid 
+        author: currentUser.displayName || '匿名ユーザ',
+        content: content,
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        userId: currentUser.uid 
     };
-
 
     postsRef.push(postData)
         .then(() => {
             showMessage('投稿が完了しました！');
             $('#contentInput').val('');
             updateCharacterCount('contentInput', 'contentCount', 1000);
+
+            // 音声を再生
+            var audio = new Audio("www/submit-sound.WAV"); // パスを確認
+            audio.play().catch((error) => {
+                console.error('Audio playback failed:', error);
+            });
         })
         .catch((error) => {
             showMessage('投稿に失敗しました：' + error.message, 'error');
-        })
-        .finally(() => {
-            button.prop('disabled', false);
         });
 }
+
 
 // HTMLエスケープ処理
 function escapeHtml(str) {
@@ -580,6 +583,7 @@ window.addEventListener('unload', function() {
                 <button id="registerButton" class="btn-secondary">新規登録</button>
             </div>
         </div>
+        
 
         <!-- ログイン情報（ログイン時表示） -->
         <div class="user-info logged-in">
