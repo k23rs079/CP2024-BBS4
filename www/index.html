@@ -111,6 +111,7 @@ function createPost(author, content) {
         content: content,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         userId: currentUser.uid 
+
     };
 
     postsRef.push(postData)
@@ -167,6 +168,11 @@ function canEditPost(post) {
     return currentUser && post.userId === currentUser.uid;
 }
 
+function toggleHighlight(postId) {
+    const postContent = $(`#post-${postId} .post-content`);
+    postContent.toggleClass('highlighted');
+}
+
 // 投稿のHTML要素を生成
 // 　バグ入りなので要修正（編集・削除機能表示判定が誤っている）
 function createPostElement(post) {
@@ -175,15 +181,18 @@ function createPostElement(post) {
     const canEdit = canEditPost(post);
     // 編集権限があれば、編集・削除機能を表示
     const actions = canEdit ? `
-        <div class="post-actions">
-            <button class="btn-edit" onclick="startEdit('${post.id}')">
-                編集
-            </button>
-            <button class="btn-delete" onclick="deletePost('${post.id}')">
-                削除
-            </button>
-        </div>
-    ` : '';
+    <div class="post-actions">
+        <button class="btn-edit" onclick="startEdit('${post.id}')">
+            編集
+        </button>
+        <button class="btn-delete" onclick="deletePost('${post.id}')">
+            削除
+        </button>
+        <button class="btn-highlight" onclick="toggleHighlight('${post.id}')">
+            ハイライト
+        </button>
+    </div>
+` : '';
 
     return `
         <div class="post" id="post-${post.id}">
@@ -489,6 +498,18 @@ function updateUI(user) {
     }
 }
 
+function highlightText() {
+  const selectedText = window.getSelection().toString();
+  if (selectedText.length > 0) {
+    const postContent = document.getElementById('post-content');
+    const highlightedText = `<span style="background-color: yellow;">${selectedText}</span>`;
+    postContent.value = postContent.value.replace(selectedText, highlightedText);
+  } else {
+    alert('テキストを選択してください');
+  }
+}
+
+
 function changeBackgroundColor(color) {
     $('body').css('background-color', color);
 }
@@ -558,9 +579,6 @@ window.addEventListener('unload', function() {
     <button onclick="changeBackgroundColor('#fff8dc')" class="btn">背景をクリーム色に</button>
     <button onclick="changeBackgroundColor('#ffffff')" class="btn">背景を元に戻す</button>
     </div>
-
-    <div class="container">
-        <h1>掲示板アプリ</h1>
         
         <!-- メッセージ表示エリア -->
         <div id="messageArea"></div>
