@@ -530,3 +530,125 @@ textarea.form-control {
 .btn-highlight:hover {
     background-color: #ffc107;
 }
+
+
+
+Start new chat
+Starred
+Star chats you use often
+Recents
+Implementing a Like Feature
+Implement Text Highlighting Feature
+Japanese Language Support
+Improving BBS with User Display Names
+Improving BBS with User Display Names
+View all
+Free plan
+
+T
+koso1624t@gmail.com
+Help & support
+T
+
+
+Implementing a Like Feature
+
+1
+
+
+<!DOCTYPE HTML> <html> <head> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> <meta http-equiv="Content-
+pasted
+T
+いいね機能を追加したい
+
+
+いいね機能を追加する実装を作成しましょう。データベースの構造とUI両方の変更が必要になります。
+
+
+いいね機能の実装
+Click to open code
+
+いいね機能のスタイル
+Click to open code
+これらの変更を実装することで、以下の機能が追加されます：
+
+各投稿にいいねボタンが表示されます
+ログインユーザーのみがいいねできます
+いいね数がリアルタイムで更新されます
+いいねした時とそうでない時で異なるアイコンが表示されます
+いいねボタンをクリックすると簡単なアニメーション効果が表示されます
+一人のユーザーが同じ投稿に対して1回だけいいねできます
+実装するには：
+
+提供したJavaScriptコードを既存のスクリプトに追加
+CSSスタイルを既存のスタイルシートに追加
+Firebase Realtime Databaseのセキュリティルールを適切に設定（いいねの読み書き権限の設定）
+これらの変更を適用後、投稿にいいねボタンが表示され、ユーザーがいいねできるようになります。何か具体的な部分について質問や修正したい点はありますか？
+
+ Copy
+Retry
+
+
+Claude can make mistakes. Please double-check responses.
+
+
+
+選択されていません
+
+
+3.5 Sonnet
+
+Choose style
+
+いいね機能のスタイル
+
+/* いいねボタンのスタイル */
+.like-container {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.like-button {
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.like-button:hover {
+    transform: scale(1.1);
+}
+
+.like-button.liked {
+    color: #ff4444;
+}
+
+.heart-icon {
+    font-size: 1.2em;
+}
+
+.likes-count {
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* いいねアニメーション */
+.liked-animation {
+    animation: like-pop 0.2s ease-in-out;
+}
+
+@keyframes like-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+Last edited 9 minutes ago
+
+
+Publish
+
+説明

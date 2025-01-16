@@ -192,32 +192,38 @@ function createPostElement(post) {
             ハイライト
         </button>
     </div>
-` : '';
+    ` : '';
+
+    const isLiked = post.likes && post.likes[currentUser?.uid];
+    const likesCount = post.likesCount || 0;
+    const likeButtonClass = isLiked ? 'liked' : '';
+    
+    const likeButton = `
+        <div class="like-container">
+            <button class="like-button ${likeButtonClass}" onclick="likePost('${post.id}')">
+                <span class="heart-icon">${isLiked ? '❤️' : '🤍'}</span>
+                <span class="likes-count">${likesCount}</span>
+            </button>
+        </div>
+    `;
 
     return `
         <div class="post" id="post-${post.id}">
             <div class="post-header">
                 <span class="post-author">${authorName}</span>
->
-                <!-- 編集権限があれば、編集・削除機能を表示 -->
                 ${actions}
             </div>
             <div class="post-content">${escapeHtml(post.content)}</div>
             <div class="edit-form">
                 <textarea class="form-control" id="edit-${post.id}"></textarea>
                 <div class="button-group">
-                    <button class="btn-primary" onclick="updatePost('${post.id}')">
-                        更新
-                    </button>
-                    <button class="btn-cancel" onclick="cancelEdit('${post.id}')">
-                        キャンセル
-                    </button>
+                    <button class="btn-primary" onclick="updatePost('${post.id}')">更新</button>
+                    <button class="btn-cancel" onclick="cancelEdit('${post.id}')">キャンセル</button>
                 </div>
             </div>
             <div class="post-footer">
-                <span class="post-time">
-                    ${formatTimestamp(post.timestamp)}
-                </span>
+                ${likeButton}
+                <span class="post-time">${formatTimestamp(post.timestamp)}</span>
                 ${post.updatedAt ? `
                     <span class="post-updated">
                         (編集済み: ${formatTimestamp(post.updatedAt)})
@@ -294,6 +300,48 @@ function loadPosts() {
         showMessage('データの読み込みに失敗しました', 'error');
         $('#loadingSpinner').hide();
     });
+}
+
+// データベースにいいねを保存する関数
+function likePost(postId) {
+    if (!currentUser) {
+        showMessage('いいねするにはログインが必要です', 'error');
+        return;
+    }
+
+    const likeRef = firebase.database().ref(`posts/${postId}/likes/${currentUser.uid}`);
+    const likesCountRef = firebase.database().ref(`posts/${postId}/likesCount`);
+
+    // トランザクションでいいね状態を切り替え
+    likeRef.once('value')
+        .then((snapshot) => {
+            if (snapshot.val()) {
+                // いいねを解除
+                return likeRef.remove()
+                    .then(() => {
+                        return likesCountRef.transaction((current) => {
+                            return (current || 0) - 1;
+                        });
+                    });
+            } else {
+                // いいねを追加
+                return likeRef.set(true)
+                    .then(() => {
+                        return likesCountRef.transaction((current) => {
+                            return (current || 0) + 1;
+                        });
+                    });
+            }
+        })
+        .then(() => {
+            // アニメーション効果
+            const likeButton = $(`#post-${postId} .like-button`);
+            likeButton.addClass('liked-animation');
+            setTimeout(() => likeButton.removeClass('liked-animation'), 200);
+        })
+        .catch((error) => {
+            showMessage('いいねの処理に失敗しました：' + error.message, 'error');
+        });
 }
 
 // モーダル関連の関数
